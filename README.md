@@ -42,3 +42,24 @@ Server Setup:
 The main function sets up and starts an HTTP server listening on port 8000.  
 This project demonstrates a basic implementation of a RESTful API in Go for managing movie  
  data. It can serve as a starting point for building more complex movie management systems.  
+
+# Simple Server  
+This Go program sets up a simple web server with two endpoints:
+
+Static File Serving:  
+
+The root endpoint "/" serves static files from the "./static" directory using http.FileServer. This could include HTML, CSS, JavaScript, images, etc.  
+Form Handling:  
+
+The "/form" endpoint handles HTTP POST requests. It parses form data from the request and prints the values of the "name" and "address" fields back to the response.  
+It demonstrates form data parsing using r.ParseForm() and accessing form values using r.FormValue().  
+Hello World Endpoint:  
+
+The "/hello" endpoint handles HTTP GET requests. It simply responds with "Hello World!".
+Request Handling:  
+
+Handlers are defined for each endpoint (formHandler and helloHandler) using http.HandleFunc.
+Server Initialization:  
+
+The main function initializes the web server, setting up the static file serving, registering the endpoints, and starting the server to listen on port 8080.  
+Overall, this program provides a basic example of handling HTTP requests, serving static files, and processing form data in a Go web server.  
