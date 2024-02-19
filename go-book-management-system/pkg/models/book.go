@@ -8,40 +8,44 @@ import (
 
 var db *gorm.DB
 
+// Book represents the structure of a book in the database
 type Book struct {
 	gorm.Model
-	Name        string `gorm:""json:"name"`
-	Author      string `json:"author"`
-	Publication string `json:"publication"`
+	Name        string `gorm:""json:"name"` // Name field represents the name of the book
+	Author      string `json:"author"`      // Author field represents the author of the book
+	Publication string `json:"publication"` // Publication field represents the publication of the book
 }
 
 func init() {
-	config.Connect()
-	db = config.GetDB()
-	db.AutoMigrate(&Book{})
+	config.Connect()        // Establishing a connection to the database
+	db = config.GetDB()     // Getting the database connection
+	db.AutoMigrate(&Book{}) // Auto migrating the Book model to create the necessary table
 }
 
+// CreateBook creates a new book record in the database
 func (b *Book) CreateBook() *Book {
 	db.NewRecord(b)
 	db.Create(&b)
 	return b
 }
 
-func GetBook() []Book {
+// GetAllBook retrieves all books from the database
+func GetAllBook() []Book {
 	var Books []Book
-	db.find(&Books)
+	db.Find(&Books)
 	return Books
 }
 
-func GetBookById(ID int64) (*Book, *gorm.DB) {
+// GetBookByID retrieves a specific book by its ID from the database
+func GetBookByID(ID int64) (*Book, *gorm.DB) {
 	var getBook Book
 	db := db.Where("ID=?", ID).Find(&getBook)
 	return &getBook, db
-
 }
-func DeleteBook(Id int64) Book {
-	var book Book
-	db.Where("ID=?", Id).Delete(book)
-	return book
 
+// DeleteBook deletes a specific book from the database
+func DeleteBook(ID int64) Book {
+	var book Book
+	db.Where("ID=?", ID).Delete(&book)
+	return book
 }

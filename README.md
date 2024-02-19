@@ -63,3 +63,14 @@ Server Initialization:
 
 The main function initializes the web server, setting up the static file serving, registering the endpoints, and starting the server to listen on port 8080.  
 Overall, this program provides a basic example of handling HTTP requests, serving static files, and processing form data in a Go web server.  
+
+# Slack Bot
+
+The Age Calculator Slack Bot is a Go application that creates a Slack bot capable of calculating a user's age based on the year of birth provided in a Slack message. Users can interact with the bot by typing a command in any Slack channel, specifying their year of birth. The bot then calculates their age and responds with the result. Installation is straightforward, requiring cloning the repository, setting up Slack bot and app tokens, and running the application. Contributions are welcome, and the project is licensed under the MIT License. For support or inquiries, users can contact the project maintainer via email.
+
+# Go Email Verifier
+
+This Go application checks various DNS records for a given domain and prints the results. It prompts the user to input domains, one per line, via standard input. For each domain entered, it performs DNS lookups to check for MX, SPF, and DMARC records. If MX records are found, it indicates that the domain has mail exchange servers. It also checks for SPF records, indicating if the domain has Sender Policy Framework configured. Additionally, it performs a lookup for DMARC records and prints the results. The application utilizes the net package for DNS lookups and the bufio package for reading input. If any errors occur during the process, they are logged. Overall, this tool provides a simple way to gather DNS information for multiple domains.
+
+# Go CRM using Go Fiber
+This Go application builds a basic CRM (Customer Relationship Management) system using the Fiber web framework and the GORM ORM for database operations. It exposes several API endpoints for managing leads. The setupRoutes function configures the routes for endpoints related to lead management, such as retrieving all leads, creating a new lead, deleting a lead, and retrieving a lead by ID. The initDatabase function initializes the SQLite database connection and performs migrations to create the necessary table for storing leads. In the main function, a new instance of the Fiber web framework is created, followed by initializing the database connection and setting up routes. The application listens for incoming requests on port 3000, and the database connection is closed when the main function exits. Overall, this application provides a foundation for building a CRM system with basic lead management functionalities.

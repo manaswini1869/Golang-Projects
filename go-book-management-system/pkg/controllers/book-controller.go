@@ -13,6 +13,7 @@ import (
 
 var NewBook models.Book
 
+// GetBook retrieves all books from the database and returns them as JSON
 func GetBook(w http.ResponseWriter, r *http.Request) {
 	newBooks := models.GetAllBook()
 	res, _ := json.Marshal(newBooks)
@@ -21,6 +22,7 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
+// GetBookById retrieves a specific book by its ID from the database and returns it as JSON
 func GetBookById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bookId := vars["bookId"]
@@ -35,6 +37,7 @@ func GetBookById(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
+// CreateBook creates a new book record in the database based on the JSON data received in the request body
 func CreateBook(w http.ResponseWriter, r *http.Request) {
 	CreateBook := &models.Book{}
 	utils.ParseBody(r, CreateBook)
@@ -45,6 +48,7 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
+// UpdateBook updates the details of a specific book in the database based on the JSON data received in the request body
 func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	var updateBook = &models.Book{}
 	utils.ParseBody(r, updateBook)
@@ -74,9 +78,9 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)
-
 }
 
+// DeleteBook deletes a specific book from the database based on its ID
 func DeleteBook(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bookId := vars["bookId"]
