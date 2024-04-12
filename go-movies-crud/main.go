@@ -36,6 +36,9 @@ var num_worker = 10
 var channel_worker = make(chan Movies)
 
 // the function call to db to remove the movies
+// Channels are the pipes that connect concurrent goroutines.
+//You can send values into channels from one goroutine and receive those values into another goroutine.
+// Here I am using channels, kind of like a queing system so we have control over how many routines are getting created
 func workerDBCall() {
 	for movies := range channel_worker {
 		dbcall(movies.Movie_year, movies.ID)
@@ -51,12 +54,12 @@ func workerDBCall() {
 func deleteMovieYearLimitedRoutines(year int) {
 	// creating and starting the workers but are limited to num_workers, go routines will get limited here
 	for i := 0; i < num_worker; i++ {
-		go workerDBCall()
+		go workerDBCall() // in subway scenario, hiring limited number of servers even during the rush hour
 	}
 	// iterating over the movies and sending to channel where it will get processed asynchronously by one the workers
 	for index, movie := range movies {
 		if movie.Movie_year < year {
-			channel_worker <- movie
+			channel_worker <- movie // in subway senario adding the work to the servers
 		}
 	}
 
