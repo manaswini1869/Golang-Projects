@@ -12,10 +12,11 @@ import (
 )
 
 type Movies struct {
-	ID       string    `json: "id"`
-	Isbn     string    `json:"isbn"`
-	Title    string    `json:"title"`
-	Director *Director `json:"director"`
+	ID         string    `json: "id"`
+	Isbn       string    `json:"isbn"`
+	Title      string    `json:"title"`
+	Director   *Director `json:"director"`
+	Movie_year int       `json:"year"`
 }
 
 type Director struct {
@@ -26,6 +27,50 @@ type Director struct {
 func getAllMovies(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(movies)
+}
+
+// fixed number of thread worker
+var num_worker = 10
+
+// creating a channel, kind of like a queing system to take make sure that the goroutines are limited
+var channel_worker = make(chan Movies)
+
+// the function call to db to remove the movies
+func workerDBCall() {
+	for movies := range channel_worker {
+		dbcall(movies.Movie_year, movies.ID)
+	}
+
+}
+
+// in the subway scenario when we have multiple servers (workerdbcall), we are queuing the orders(request) each can take when
+// iterating over the array, and executing them asynchronously.
+// if there is not limit on how many threads can be created, we can use the function deleteMovieYear, and create
+// threads over and over
+
+func deleteMovieYearLimitedRoutines(year int) {
+	// creating and starting the workers but are limited to num_workers, go routines will get limited here
+	for i := 0; i < num_worker; i++ {
+		go workerDBCall()
+	}
+	// iterating over the movies and sending to channel where it will get processed asynchronously by one the workers
+	for index, movie := range movies {
+		if movie.Movie_year < year {
+			channel_worker <- movie
+		}
+	}
+
+	close(channel_worker)
+}
+
+// This function will create routines for every index parsed, assumption unlimited CPU resources to use
+func deleteMovieYear(year int) {
+	for _, movies := range movies {
+		if movies.Movie_year < year {
+			// creating go routine to call to db
+			go dbcall(year, movies.ID) // go routine running asynchronously not waiting for the db call api call with the year and movie id
+		}
+	}
 }
 
 func deleteMovie(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +122,17 @@ func updateMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func deleteMovieYearRoutines(w http.ResponseWriter, r *http.Request) {
+	year, err := strconv.Atoi(r.URL.Query().Get("year"))
+	if err != nil {
+		http.Error(w, "Invalid year parameter.", http.StatusBadRequest) // 400 code
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+	go deleteMovieYear(year) // creates new go routine for deleting any movies before the given year, server is ready to accept new requests
+
+}
+
 var movies []Movies
 
 func main() {
@@ -90,7 +146,7 @@ func main() {
 	r.HandleFunc("/movies", createMovie).Methods("POST")
 	r.HandleFunc("/movies/{id}", updateMovie).Methods("PUT")
 	r.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
-
+	r.HandleFunc("/movies/", deleteMovieYearRoutines).Methods("DELETE")
 	fmt.Printf("Starting server at port 8000\n")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
